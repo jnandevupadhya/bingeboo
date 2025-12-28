@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link href="styles.css" rel="stylesheet" />
+  </head>
+  <body>
+    <!-- Host View -->
+    <div id="hostView" class="host-view">
+      <div class="room-id-value" style="margin-bottom: 10px">BingeBoo</div>
+
+      <div class="connection-status">
+        <div id="connectionDot" class="connection-dot"></div>
+        <span id="connectionText">waiting for pookie >.<</span>
+      </div>
+
+      <div class="room-info-container">
+        <div class="room-info-row">
+          <div class="room-info-item">
+            <div class="room-id-label">Room ID</div>
+            <div id="roomIdDisplay" class="room-id-value">-----</div>
+          </div>
+          <div class="room-info-divider"></div>
+          <div class="room-info-item">
+            <div class="room-id-label">Password</div>
+            <div id="roomPassDisplay" class="room-id-value password">-----</div>
+          </div>
+        </div>
+      </div>
+      <button id="copyBtn" class="copy-btn">Copy Room Info</button>
+      <button id="hostExitBtn" class="exit-btn">Disconnect</button>
+    </div>
+
+    <!-- Guest View -->
+    <div id="guestView" class="guest-view">
+      <div class="input-group">
+        <label class="input-label">Room Password</label>
+        <input id="roomPass" type="text" placeholder="Enter room password" />
+      </div>
+      <button id="connectBtn" disabled>
+        <span id="btnText">Host Room</span>
+        <span id="btnLoader" class="loader hidden"></span>
+      </button>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
