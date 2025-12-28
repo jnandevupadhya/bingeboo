@@ -68,7 +68,7 @@ From here, everything stays in sync automatically.
 ## ⚠️ Important Notes
 
 - You must watch your shows on the browser where you install the extension
-- This extension **only works with the BingeBoo backend running**. [Click to wake the backend up.]()
+- This extension **only works with the BingeBoo backend running**. [Click to wake the backend up.](https://bingeboo-dev.onrender.com)
 - It isn’t meant to be used on its own — it’s designed for two people, like friends or couples, watching together.
 - It only activates on **netflix.com**
 - No Netflix content ever leaves your browser

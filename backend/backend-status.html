@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hello There</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/png" href="/static/favicon.png" />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        user-select: none;
+        -webkit-user-select: none; /* Chrome / Safari */
+        -ms-user-select: none;
+      }
+
+      body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Cormorant Garamond", Georgia, serif;
+        background-color: #2d2a32;
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+      }
+
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(
+          160deg,
+          rgba(45, 42, 50, 0.88) 0%,
+          rgba(58, 50, 65, 0.78) 50%,
+          rgba(42, 38, 48, 0.88) 100%
+        );
+        z-index: 1;
+      }
+
+      .container {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        padding: 3rem;
+      }
+
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        background: #a8e6cf;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0.6rem;
+        animation: glow 3s ease-in-out infinite;
+        box-shadow: 0 0 15px rgba(168, 230, 207, 0.4);
+      }
+
+      @keyframes glow {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.6;
+        }
+      }
+
+      .status-line {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 2rem;
+      }
+
+      .status-text {
+        font-size: 0.9rem;
+        font-weight: 300;
+        font-style: italic;
+        letter-spacing: 0.15em;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      h1 {
+        font-size: clamp(2.8rem, 10vw, 5rem);
+        font-weight: 300;
+        color: #fff;
+        letter-spacing: 0.02em;
+        margin-bottom: 0.75rem;
+        font-style: italic;
+      }
+
+      .subtitle {
+        font-size: 1.25rem;
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.55);
+        letter-spacing: 0.08em;
+      }
+
+      .divider {
+        width: 80px;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.25),
+          transparent
+        );
+        margin: 2.5rem auto;
+      }
+
+      .note {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.4);
+        font-style: italic;
+        max-width: 300px;
+        margin: 0 auto;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="status-line">
+        <span class="status-dot"></span>
+        <span class="status-text">awake & ready</span>
+      </div>
+      <h1>Hello, you</h1>
+      <p class="subtitle">the BingeBoo backend has been summoned</p>
+      <div class="divider"></div>
+      <p class="note">
+        the little things are working quietly in the background, just as they
+        should.
+      </p>
+    </div>
+
+    <script>
+      // Fetch random image from Picsum
+      const randomId = Math.floor(Math.random() * 1000);
+      const img = new Image();
+      img.onload = function () {
+        document.body.style.backgroundImage = `url('${img.src}')`;
+      };
+      img.src = `https://picsum.photos/1920/1080?random=${randomId}`;
+    </script>
+  </body>
+</html>
