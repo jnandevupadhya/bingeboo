@@ -32,8 +32,13 @@ From there, both of you control playback using just **three simple buttons** —
 ## 🎥 Quick Look
 
 <p align="center">
-<img src="https://i.ibb.co/n8CT7p4N/binge-extension-binge-Boo.gif" width="300" alt="bingeboo-extension" border="5">
-<img src="https://i.ibb.co/27JGc1qx/binge-client-binge-Boo.gif" width="300" alt="bingeboo app" border="5">
+<b>WATCH</b>
+</p>
+<p align="center">
+  <a href="https://youtu.be/SD39LjpOwfA">
+    <img src="https://img.youtube.com/vi/SD39LjpOwfA/maxresdefault.jpg
+    " width="500" alt="Quick look">
+  </a>
 </p>
 
 ---
