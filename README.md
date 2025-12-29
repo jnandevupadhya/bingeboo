@@ -1,4 +1,4 @@
-# 🍿 **BingeBoo — Watch together, even when you’re apart.**
+# 🍿 **BingeBoo — Binge nights, better together!**
 
 > Made for fun ❤️ · Not affiliated with Netflix
 
