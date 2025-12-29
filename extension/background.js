@@ -8,6 +8,8 @@ let ws = null;
 let hosted = false;
 let pookieConnected = false;
 let connecting = false;
+let fallbackTimer;
+let fallbackOpened = false;
 
 chrome.storage.local.get(["ROOM_ID"], (result) => {
   if (result.ROOM_ID) ROOM_ID = result.ROOM_ID;
@@ -47,6 +49,16 @@ async function getNetflixTabId() {
   return tabs[0].id;
 }
 
+function openFallback() {
+  if (fallbackOpened) return;
+  fallbackOpened = true;
+
+  chrome.tabs.create({
+    url: "https://bingeboo-backend-status.netlify.app/",
+    active: true, // or false if you want it in background
+  });
+}
+
 function connectWS() {
   if (!roomPass && roomPass.length > 0) {
     console.warn("⛔ No room pass, not connecting");
@@ -64,6 +76,11 @@ function connectWS() {
 
   const WS_URL = `wss://bingeboo-dev.onrender.com/ws/host?${params.toString()}`;
 
+  fallbackTimer = setTimeout(() => {
+    console.warn("⏳ WS taking too long, opening countdown page");
+    openFallback();
+  }, 5000);
+
   ws = new WebSocket(WS_URL);
 
   ws.onopen = () => {
@@ -79,6 +96,7 @@ function connectWS() {
     }
 
     if (cmd?.type === "hosted") {
+      clearTimeout(fallbackTimer); // ⛔ stop fallback
       const ROOM_ID = cmd.room_id;
       hosted = true;
       connecting = false;
