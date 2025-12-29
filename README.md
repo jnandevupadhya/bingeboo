@@ -36,8 +36,7 @@ From there, both of you control playback using just **three simple buttons** —
 </p>
 <p align="center">
   <a href="https://youtu.be/SD39LjpOwfA">
-    <img src="https://img.youtube.com/vi/SD39LjpOwfA/maxresdefault.jpg
-    " width="500" alt="Quick look">
+    <img src="https://img.youtube.com/vi/SD39LjpOwfA/maxresdefault.jpg" width="500" alt="Quick look">
   </a>
 </p>
 
