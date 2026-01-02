@@ -10,6 +10,7 @@ let pookieConnected = false;
 let connecting = false;
 let fallbackTimer;
 let fallbackOpened = false;
+let globalTabId = null;
 
 chrome.storage.local.get(["ROOM_ID"], (result) => {
   if (result.ROOM_ID) ROOM_ID = result.ROOM_ID;
@@ -87,7 +88,7 @@ function connectWS() {
     console.log("🟢 WS connected as HOST");
   };
 
-  ws.onmessage = (e) => {
+  ws.onmessage = async (e) => {
     let cmd;
     try {
       cmd = JSON.parse(e.data);
@@ -95,7 +96,7 @@ function connectWS() {
       return;
     }
 
-    if (cmd?.type === "hosted") {
+    if (cmd?.type == "hosted") {
       clearTimeout(fallbackTimer); // ⛔ stop fallback
       const ROOM_ID = cmd.room_id;
       hosted = true;
@@ -115,6 +116,9 @@ function connectWS() {
       });
     } else if (cmd?.type === "controller_connected") {
       pookieConnected = true;
+
+      await sendInitialPlaybackState();
+
       chrome.runtime.sendMessage({ type: "CONTROLLER_CONNECTED" });
     } else if (cmd?.type === "controller_disconnected") {
       pookieConnected = false;
@@ -146,54 +150,99 @@ function connectWS() {
 }
 
 async function dispatchNetflixCommand(cmd) {
-  const keyMap = {
-    play: { key: " ", code: "Space", vk: 32 },
-    pause: { key: " ", code: "Space", vk: 32 },
-    toggle: { key: " ", code: "Space", vk: 32 },
-    forward: { key: "ArrowRight", code: "ArrowRight", vk: 39 },
-    rewind: { key: "ArrowLeft", code: "ArrowLeft", vk: 37 },
-    fullscreen: { key: "f", code: "KeyF", vk: 70 },
-    mute: { key: "m", code: "KeyM", vk: 77 },
-  };
-
-  const k = keyMap[cmd.action];
-  if (!k) {
-    console.warn("Unknown Netflix command:", cmd);
-    return;
-  }
-
   const tabId = await getNetflixTabId();
   if (!tabId) return;
 
-  await ensureDebugger(tabId);
+  switch (cmd.action) {
+    case "play":
+    case "pause":
+    case "toggle":
+      await clickNetflixPlayPause(tabId);
+      break;
 
-  // do debugger stuff
-  await sendKey(tabId, k);
-  // or await clickToggleNetflix(tabId);
+    case "forward":
+      await sendNetflixKey(tabId, "ArrowRight", "ArrowRight", 39);
+      break;
 
-  await detachDebugger(tabId);
+    case "rewind":
+      await sendNetflixKey(tabId, "ArrowLeft", "ArrowLeft", 37);
+      break;
+
+    // case "fullscreen":
+    //   await sendNetflixKey(tabId, "f", "KeyF", 70);
+    //   break;
+
+    // case "mute":
+    //   await sendNetflixKey(tabId, "m", "KeyM", 77);
+    //   break;
+
+    default:
+      console.warn("Unknown Netflix command:", cmd);
+  }
 }
 
-async function sendKey(tabId, { key, code, vk }) {
-  await chrome.debugger.sendCommand({ tabId }, "Input.dispatchKeyEvent", {
-    type: "keyDown",
-    key,
-    code,
-    windowsVirtualKeyCode: vk,
-    nativeVirtualKeyCode: vk,
-  });
+async function clickNetflixPlayPause(tabId) {
+  await chrome.scripting.executeScript({
+    target: { tabId },
+    func: () => {
+      const video = document.querySelector("video");
 
-  await chrome.debugger.sendCommand({ tabId }, "Input.dispatchKeyEvent", {
-    type: "keyUp",
-    key,
-    code,
-    windowsVirtualKeyCode: vk,
-    nativeVirtualKeyCode: vk,
+      if (!video) {
+        console.warn("Video element not found");
+        return;
+      }
+
+      if (video.paused) {
+        video.play().catch((err) => {
+          console.warn("Play blocked:", err);
+        });
+      } else {
+        video.pause();
+      }
+    },
   });
 
   sendToActiveNetflix({
     type: "TOGGLE",
     reason: "paused_by_partner",
+  });
+}
+
+async function sendNetflixKey(tabId, key, code, keyCode) {
+  await chrome.scripting.executeScript({
+    target: { tabId },
+    func: (key, code, keyCode) => {
+      const player =
+        document.querySelector('[data-uia="player"]') ||
+        document.querySelector("video")?.parentElement;
+
+      if (!player) return;
+
+      player.focus();
+
+      player.dispatchEvent(
+        new KeyboardEvent("keydown", {
+          key,
+          code,
+          keyCode,
+          which: keyCode,
+          bubbles: true,
+          cancelable: true,
+        })
+      );
+
+      player.dispatchEvent(
+        new KeyboardEvent("keyup", {
+          key,
+          code,
+          keyCode,
+          which: keyCode,
+          bubbles: true,
+          cancelable: true,
+        })
+      );
+    },
+    args: [key, code, keyCode],
   });
 }
 
@@ -285,4 +334,25 @@ function sendToActiveNetflix(message) {
 function sendJSON(obj) {
   if (!ws || ws.readyState !== WebSocket.OPEN) return;
   ws.send(JSON.stringify(obj));
+}
+
+async function sendInitialPlaybackState() {
+  globalTabId = await getNetflixTabId();
+  if (globalTabId) {
+    const [{ result }] = await chrome.scripting.executeScript({
+      target: { tabId: globalTabId },
+      func: () => {
+        const video = document.querySelector("video");
+        if (!video) return null;
+        return video.paused;
+      },
+    });
+
+    if (result !== null) {
+      console.log(result);
+      sendJSON({
+        type: result ? "paused" : "playing",
+      });
+    }
+  }
 }

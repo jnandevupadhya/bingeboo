@@ -60,6 +60,17 @@ function waitForVideo() {
 waitForVideo();
 
 function attachVideoListeners(video) {
+  if (video.paused)
+    chrome.runtime.sendMessage({
+      type: "TOGGLE_MANUAL",
+      paused: true,
+    });
+  else
+    chrome.runtime.sendMessage({
+      type: "TOGGLE_MANUAL",
+      paused: false,
+    });
+
   video.addEventListener("play", () => {
     if (firstCallDone) overlay.style.display = "none";
     chrome.runtime.sendMessage({
@@ -128,4 +139,3 @@ observer.observe(document.body, {
   childList: true,
   subtree: true,
 });
-
